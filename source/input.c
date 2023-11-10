@@ -1242,15 +1242,15 @@ int input_get_guess(double *xguess,
        * dxdy[index_guess] = -0.5081*pow(ba.Omega0_scf,-9./7.)`;
        * Version 3: use attractor solution
        * */
-      if (ba.scf_tuning_index == 0){
-        xguess[index_guess] = sqrt(3.0/ba.Omega0_scf);
-        dxdy[index_guess] = -0.5*sqrt(3.0)*pow(ba.Omega0_scf,-1.5);
-      }
-      else{
+      //if (ba.scf_tuning_index == 0){
+      //  xguess[index_guess] = sqrt(3.0/ba.Omega0_scf);
+      //  dxdy[index_guess] = -0.5*sqrt(3.0)*pow(ba.Omega0_scf,-1.5);
+      //}
+      //else{
         /* Default: take the passed value as xguess and set dxdy to 1. */
         xguess[index_guess] = ba.scf_parameters[ba.scf_tuning_index];
-        dxdy[index_guess] = 1.;
-      }
+        dxdy[index_guess] = -1.;
+      //}
       break;
     case omega_ini_dcdm:
       Omega0_dcdmdr = 1./(ba.h*ba.h);
@@ -1686,7 +1686,7 @@ int input_read_parameters(struct file_content * pfc,
              errmsg);
 
   /** Read parameters for primordial quantities */
-  class_call(input_read_parameters_primordial(pfc,ppt,ppm,
+  class_call(input_read_parameters_primordial(pfc,pba,ppt,ppm,
                                               errmsg),
              errmsg,
              errmsg);
@@ -4022,6 +4022,7 @@ int input_prepare_pk_eq(struct precision * ppr,
  */
 
 int input_read_parameters_primordial(struct file_content * pfc,
+                                     struct background * pba, /* SN */
                                      struct perturbations * ppt,
                                      struct primordial * ppm,
                                      ErrorMsg errmsg){
@@ -4121,6 +4122,10 @@ int input_read_parameters_primordial(struct file_content * pfc,
         ppm->A_s = exp(param3)*1.e-10;
       }
 
+    /* SN */
+    pba->A_s = ppm->A_s;
+	pba->n_s = ppm->n_s;
+
       /** 1.b.1.1) Adiabatic perturbations */
       if (ppt->has_ad == _TRUE_) {
         /* Read */
@@ -4208,7 +4213,9 @@ int input_read_parameters_primordial(struct file_content * pfc,
     /** 1.b.2) For tensor perturbations */
     if (ppt->has_tensors == _TRUE_){
       /* Read */
-      class_read_double("r",ppm->r);
+      //class_read_double("r",ppm->r);
+	  /* SN */
+	  ppm->r = 3.*pba->scf_parameters[1]*(1-ppm->n_s)*(1-ppm->n_s); /* SN */
       if (ppt->has_scalars == _FALSE_){
         class_read_double("A_s",ppm->A_s);
       }
@@ -5917,6 +5924,7 @@ int input_default_params(struct background *pba,
   /** 1.b) For type 'analytic_Pk' */
   /** 1.b.1) For scalar perturbations */
   ppm->A_s = 2.100549e-09;
+  pba->A_s =  ppm->A_s;
   /** 1.b.1.1) Adiabatic perturbations */
   ppm->n_s = 0.9660499;
   ppm->alpha_s = 0.;

@@ -2898,7 +2898,7 @@ int background_output_budget(
  and \f$ \rho^{class} \f$ has the proper dimension \f$ Mpc^-2 \f$.
 */
 
-double V_e_scf(struct background *pba,
+/* double V_e_scf(struct background *pba,
                double phi
                ) {
   double scf_lambda = pba->scf_parameters[0];
@@ -2930,7 +2930,7 @@ double ddV_e_scf(struct background *pba,
 
   return pow(-scf_lambda,2)*V_e_scf(pba,phi);
 }
-
+ */
 
 /** parameters and functions for the polynomial coefficient
  * \f$ V_p = (\phi - B)^\alpha + A \f$(polynomial bump)
@@ -2942,7 +2942,7 @@ double ddV_e_scf(struct background *pba,
  * double scf_A = 0.01; (values for their Figure 2)
  */
 
-double V_p_scf(
+/* double V_p_scf(
                struct background *pba,
                double phi) {
   //  double scf_lambda = pba->scf_parameters[0];
@@ -2974,12 +2974,12 @@ double ddV_p_scf(
   double scf_B      = pba->scf_parameters[3];
 
   return  scf_alpha*(scf_alpha - 1.)*pow(phi -  scf_B,  scf_alpha - 2);
-}
+} */
 
 /** Fianlly we can obtain the overall potential \f$ V = V_p*V_e \f$
  */
 
-double V_scf(
+/* double V_scf(
              struct background *pba,
              double phi) {
   return  V_e_scf(pba,phi)*V_p_scf(pba,phi);
@@ -2995,4 +2995,56 @@ double ddV_scf(
                struct background *pba,
                double phi) {
   return ddV_e_scf(pba,phi)*V_p_scf(pba,phi) + 2*dV_e_scf(pba,phi)*dV_p_scf(pba,phi) + V_e_scf(pba,phi)*ddV_p_scf(pba,phi);
+} */
+
+double V_scf(
+             struct background *pba,
+             double phi) {
+				 
+  double gamma, alpha, Ns, M2, V0, eps;
+  
+  gamma = pba->scf_parameters[0]; // gamma ~ 120
+  alpha = pba->scf_parameters[1]; // alpha ~ 7/3 etc, see paper
+  Ns = 2./(1.-pba->n_s); // Ns~60
+  eps = pba->scf_parameters[2]; //(0 -> Model 1, 1 -> Model2)
+  
+  M2 = (144*_PI_*_PI_*alpha*Ns*pba->A_s)/pow(2.*Ns-3.*alpha,3.)*_mpl_to_Mpc_*_mpl_to_Mpc_;
+  
+  if(eps == 0){
+	  V0 = 0;
+  }  else if (eps == 1){
+	  V0 = -M2*exp(-2.*gamma)*eps;
+  } else {
+	  V0 = 0;
+  }
+
+  return  M2*exp(gamma*(tanh(phi/sqrt(6*alpha))-1.))+V0;
+}
+
+double dV_scf(
+              struct background *pba,
+              double phi) {
+  double gamma, alpha, Ns, M2;
+  
+  gamma = pba->scf_parameters[0]; // gamma ~ 120
+  alpha = pba->scf_parameters[1]; // alpha ~ 7/3 etc, see paper
+  Ns = 2./(1.-pba->n_s); // Ns~60
+  
+  M2 = (144*_PI_*_PI_*alpha*Ns*pba->A_s)/pow(2.*Ns-3.*alpha,3.)*_mpl_to_Mpc_*_mpl_to_Mpc_;
+  
+  return  M2*exp(gamma*(tanh(phi/sqrt(6*alpha))-1.))*gamma*pow(cosh(phi/sqrt(6*alpha)),-2.)/sqrt(6*alpha);
+}
+
+double ddV_scf(
+               struct background *pba,
+               double phi) {
+  double gamma, alpha, Ns, M2;
+  
+  gamma = pba->scf_parameters[0]; // gamma ~ 120
+  alpha = pba->scf_parameters[1]; // alpha ~ 7/3 etc, see paper
+  Ns = 2./(1.-pba->n_s); // Ns~60
+  
+  M2 = (144*_PI_*_PI_*alpha*Ns*pba->A_s)/pow(2.*Ns-3.*alpha,3.)*_mpl_to_Mpc_*_mpl_to_Mpc_;
+  
+  return M2*exp(gamma*(tanh(phi/sqrt(6*alpha))-1.))*gamma*pow(cosh(phi/sqrt(6*alpha)),-4.)*(gamma-sinh(2.*phi/sqrt(6*alpha)))/(6*alpha);
 }
