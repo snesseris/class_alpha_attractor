@@ -127,6 +127,10 @@ struct background
   enum varconst_dependence varconst_dep; /**< dependence of the varying fundamental constants as a function of time */
   double varconst_transition_redshift; /**< redshift of transition between varied fundamental constants and normal fundamental constants in the 'varconst_instant' case*/
 
+/* SN */
+  double A_s;
+  double n_s;
+
   //@}
 
 

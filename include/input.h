@@ -403,6 +403,7 @@ extern "C" {
                           ErrorMsg errmsg);
 
   int input_read_parameters_primordial(struct file_content * pfc,
+                                       struct background * pba, /* SN */
                                        struct perturbations * ppt,
                                        struct primordial * ppm,
                                        ErrorMsg errmsg);
