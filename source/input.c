@@ -4122,16 +4122,16 @@ int input_read_parameters_primordial(struct file_content * pfc,
         ppm->A_s = exp(param3)*1.e-10;
       }
 
-    /* SN */
-    pba->A_s = ppm->A_s;
-	pba->n_s = ppm->n_s;
-
       /** 1.b.1.1) Adiabatic perturbations */
       if (ppt->has_ad == _TRUE_) {
         /* Read */
         class_read_double("n_s",ppm->n_s);
         class_read_double("alpha_s",ppm->alpha_s);
       }
+
+      /* SN */
+      pba->A_s = ppm->A_s;
+      pba->n_s = ppm->n_s;
 
       /** 1.b.1.2) Isocurvature/entropy perturbations */
       /* Read */

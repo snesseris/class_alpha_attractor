@@ -3010,6 +3010,13 @@ double V_scf(
   
   M2 = (144*_PI_*_PI_*alpha*Ns*pba->A_s)/pow(2.*Ns-3.*alpha,3.)*_mpl_to_Mpc_*_mpl_to_Mpc_;
   
+  //printf("pba->n_s = %.10f \n",pba->n_s);
+  //printf("pba->A_s = %.10e \n",pba->A_s);
+  //printf("N* = %.10e \n", Ns);
+  //printf("M2 = %.10e \n", M2/(_mpl_to_Mpc_*_mpl_to_Mpc_));
+  //printf("");
+  //exit(1);
+
   if(eps == 0){
 	  V0 = 0;
   }  else if (eps == 1){
